@@ -1,0 +1,25 @@
+---
+title: "W47"
+author: "Kian Kier Rossau"
+date: "2022-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question A
+This is the script used to visualive my data around danish kings and their duration of reign. 
+
+```{r}
+library(tidyverse)
+library(here)
+Kings <- read_csv(here("data", "Danish_kings.csv"),na= "NULL")
+# pipe
+Kings %>%
+    ggplot(aes(x = Name, y = duration_of_reign))+
+    coord_flip()+
+    geom_col()
+
+```
