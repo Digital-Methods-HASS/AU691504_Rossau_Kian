@@ -1,0 +1,81 @@
+---
+title: "Vicotrian cross, 2,2"
+author: "Kian Kier Rossau"
+date: "2022-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+So I have decided to do the 2.2 assignment about Web Scraping, as I don't think I could do 2.1 as I would have nothing new to bring to visualisations of the police killing. 
+
+I have chosen to scrape and work with data from the wiki article about First World War Victoria Cross recipients, due to my interest in the topic. 
+This assignment is going to be in several smaller parts; a short summary about the Victoria Cross, a walkthrough of scraping and cleaning of the data, several visualisations and a short conclusion. 
+The goals are for me to find out and show is, A) which years in the great saw the most Victoria Cross Recipients, B) a timeline visual thing to show how numbers changed during the war, C) find out which front saw the most recipients, and D) were the victoria cross for the most spread equally in the military or was there some units who have a higher amount of bravery, heroism and valour.  
+
+What is the Victoria Cross? 
+The Victorian Cross was and still is the highest award in the British military. The award was introduced in 1856 by Queen Victoria to honour acts of valour during the Crimean War, and to serve as an award that was open to all men, no matter what their rank or class was. 
+Ever the medals themself are unique due to be made out of metal from captured Russian cannons to form a crown of Saint Edward surmounted by a lion, and with the inscription "for valour". 
+In total 1,355 individuals had got a Victorian Cross during the medal history, and around half of them were given during the brutal 4 years of fighting, which we know as  the great war or world war one. 
+
+
+````{r libraries, warning=FALSE, message=FALSE}
+library(rvest)
+library(dplyr)
+library(tidyr)
+library("RCurl")
+library(stringr)
+library(janitor)
+library("mondate")
+library("XML")
+library("roperators")
+````
+So for this bit, I have R-studio read the wikipedia, and with use of the html_node to tell it which part of the page to look for, and html_table to gather the data into a table like how it was on wikipedia 
+```{r reading the html and turn it to table}
+Victoria_Cross = read_html ("https://en.wikipedia.org/wiki/List_of_First_World_War_Victoria_Cross_recipients")
+Victoria_Cross = html_node (Victoria_Cross, ".wikitable")
+Victoria_Cross = html_table(Victoria_Cross, fill = TRUE)   
+```
+Just checking to see what it bring with it.
+
+```{r checking}
+head(Victoria_Cross)
+```
+
+looking great. 
+
+Now I will use the count function along with sort to find which unit is mention most 
+```{r list over units and victorian cross}
+Victoria_Cross %>% count(Unit, sort = TRUE)
+  
+```
+I am a bit surpice, I did not expect that any unit would get so a high number compared to what was the average, like what we see with the Lancashire Fusiliers and Manchester Reginment. 
+I did not expect that support units like artillery, Engineers and Medic would be home to so many victoria cross recipients.
+
+I am going to use the sum function to see how many recipinets was from the navy with going RStudio to find how many time HMS is mention in the dataset.The reason is that vicoria cross recipients is divide among a lot of navy ships which the Rstudio would count as one, but every ships start their name with HMS, so we should get a number for the seamen. 
+
+```{r sum of navy ship}
+ sum(Victoria_Cross %s/% 'HMS') 
+```
+So 28 times, for a war with limit naval action, I am not surpice a lot with this. 
+
+
+I am going to use the count function again, this time to show which battle show the most victoria cross
+```{r distribution with battles }
+Victoria_Cross %>% count(`Place of action`, sort = TRUE)
+  
+```
+Gallipoli? I though it would be the battle of the sommers or Ypres, but the data dont lie.
+
+A problem with that is it only tell how many victoria cross is with a single battle, so to give a better view on how the cross allot to the fronts, I use sum to see how many times, France, Belgium, Turkey or Mesopotamia pop up in the rows.
+```{r showing distribution with fronts}
+ sum(Victoria_Cross %s/% 'France') 
+ sum(Victoria_Cross %s/% 'Belgium') 
+ sum(Victoria_Cross %s/% 'Turkey') 
+ sum(Victoria_Cross %s/% 'Mesopotamia') 
+```
+As expected the french front saw the most victoria cross, but I thought the Mesopotamia front would see more then the Turkish front, well it tell that battle in Turkey (Gallipoli campaign) was a lot more brutale, if it could create situation, that lead to more victoria cross recipients then Mesopotamia that was runnning almost the whole of the war.  
+
+conclusion: So we can see that France as a front was the place of most vicotria Corss, and that some units have a higter rate of them compared to the average. 
+I did not do the things I want with the dates as that would require a lot more time and effort that would see me export the data to excel to fix the problem manually. 
